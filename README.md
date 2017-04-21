@@ -1,4 +1,4 @@
-# Rest API Practice
+# Kan Academy
 
 We need to create a RESTful API for a school system. There will be teachers, students, and classes.
 
