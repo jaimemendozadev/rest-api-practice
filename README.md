@@ -2,7 +2,7 @@
 
 We need to create a RESTful API for a school system. There will be teachers, students, and classes.
 
-You will be using MongoDB and the Mongoose ORM for data persistence, and express with NodeJS to create an http web server.
+You will be using MongoDB and the Mongoose ODM for data persistence, and express with NodeJS to create an http web server.
 
 First, Install [MongoDB](https://docs.mongodb.com/v3.0/tutorial/install-mongodb-on-os-x/). Once installed, run the command `mongod` to start a local mongoDB server.
 
@@ -29,18 +29,16 @@ Lists information for every teacher
   Response
     success : BOOLEAN
     err     : STRING
-    teachers: ARRAY<{
-      id   : INTEGER
+    teachers: ARRAY<teacher: {
       name : STRING
       email: STRING
     }>
 ```
 
 ```plaintext
-{GET} /api/teachers/:id
+{GET} /api/teachers/:name
 Lists the information about one teacher
   Response
-    id   : INTEGER
     name : STRING
     email: STRING
 ```
@@ -53,7 +51,6 @@ Creates a teacher
     email: STRING
   Response
     success: BOOLEAN
-    id     : INTEGER
     err    : STRING
 ```
 
@@ -65,15 +62,14 @@ Lists information for every student
   Response
     success : BOOLEAN
     err     : STRING
-    students: ARRAY<{
-      id   : INTEGER
+    students: ARRAY<student: {
       name : STRING
       email: STRING
     }>
 ```
 
 ```plaintext
-{GET} /api/students/:id
+{GET} /api/students/:name
 Lists information for one student
   Response
     success: BOOLEAN
@@ -91,7 +87,6 @@ Creates a student
     email: STRING
   Response
     success: BOOLEAN
-    id     : INTEGER
     err    : STRING
 ```
 
@@ -103,7 +98,7 @@ Lists information for all classes
   Response
     success: BOOLEAN
     err    : STRING
-    classes: ARRAY<{
+    classes: ARRAY<class: {
       id  : INTEGER
       code: STRING
       name: STRING
@@ -111,11 +106,10 @@ Lists information for all classes
 ```
 
 ```plaintext
-{GET} /api/classes/:id
+{GET} /api/classes/:code
 Lists information for one class
   Response
     success: BOOLEAN
-    id     : INTEGER
     code   : STRING
     name   : STRING
     err    : STRING
@@ -123,13 +117,12 @@ Lists information for one class
 
 ```plaintext
 {POST} /api/classes
-Creates a class
+Creates a class (codes must be unique)
   Expected Body
     code: STRING
     name: STRING
   Response
     success: BOOLEAN
-    id     : INTEGER
     err    : STRING
 ```
 
@@ -137,15 +130,17 @@ Creates a class
 
 - [ ] Modify the `{POST} /api/students` route to create classroom associations when a student is created.
 
-Note: Because we are working with MongoDB–a noSQL database–we have the option of storing an array of associated ids on the students model itself.
+Note: Because we are working with MongoDB–a noSQL database–we have the option of storing an array of associated information on the students model itself.
+
+Mongoose may have some helper utility to create associations for you. Time to look at the docs!
 
 ```plaintext
 {POST} /api/students
 Creates a student
   Expected Body
-    name: STRING
-    email: STRING
-    classes: ARRAY<INTEGER> (Array of class ids)
+    name   : STRING
+    email  : STRING
+    classes: ARRAY<classCodes: STRING>
   Response
     success: BOOLEAN
     id     : INTEGER
@@ -155,10 +150,10 @@ Creates a student
 - [ ] Create a route for associating an existing student with a set of classes
 
 ```plaintext
-{PUT} /api/students/:id/editClasses
+{PUT} /api/students/:name/editClasses
 Updates a student's classes
   Expected Body
-    classes: ARRAY<INTEGER> (Array of class ids)
+    classes: ARRAY<classCodes: STRING>
   Response
     success: BOOLEAN
     id     : INTEGER
